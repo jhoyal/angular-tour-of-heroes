@@ -1,7 +1,7 @@
-### STAGE 1: Build ###
+############################## STAGE 1: Build ##############################
 # We label our stage as 'builder'
-FROM node:10.7.0-alpine as builder
-COPY package.json package-lock.json ./
+FROM node:8.11.3 as builder
+COPY package.json ./
 RUN npm set progress=false && npm config set depth 0 && npm cache clean --force
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
@@ -13,7 +13,7 @@ COPY . .
 RUN $(npm bin)/ng build --prod
 
 
-### STAGE 2: Setup ###
+############################## STAGE 2: Setup ##############################
 FROM nginx:1.15.1-alpine
 
 ## Copy our default nginx config

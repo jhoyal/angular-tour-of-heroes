@@ -1,0 +1,7 @@
+# √ Create a Dockerfile that creates a Windows Node Server
+# Create a Dockefile that uses the Node Server to Build and angular app
+# Create a Dockerfile that serves an angular app from IIS
+# Create a Dockerfile that serves an angular app from IIS via HTTP
+# Creata a Dockerfile that serves a .NET Core API
+# Consume API from docker container with angular docker container
+# Create Repo with all these dockerfiles
