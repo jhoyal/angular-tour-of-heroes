@@ -1,21 +1,43 @@
 ############################## STAGE 1: Build ##############################
-# We label our stage as 'builder'
-FROM angular-cli as angular-builder
+FROM node:latest as angular-builder
 WORKDIR /ng-app
 COPY package.json package.json
 RUN npm install
 COPY . .
-RUN ng build --prod --build-optimizer
+RUN npm run build -- --prod
 
-# ############################## STAGE 2: Setup ##############################
-FROM microsoft/iis:10.0.14393.206
-COPY --from=angular-builder /ng-app/dist /ng-app
-SHELL ["powershell"]
-RUN Remove-WebSite -Name 'Default Web Site'
-RUN New-Website -Name 'tour-or-heros' -Port 80 \
-    -PhysicalPath 'c:\ng-app' -ApplicationPool '.NET v4.5'
+################################ STAGE 2: Serve ##############################
+FROM nginx:alpine
+LABEL author="Joseph Hoyal"
+COPY --from=angular-builder /ng-app/dist/angular-tour-of-heroes/ /usr/share/nginx/html
+COPY ./nginx/default.conf /etc/nginx/conf.d/
+CMD [ "nginx", "-g", "daemon off;" ]
 
-EXPOSE 80
+# docker build -t nginx-angular .
+# docker run -d -p 8080:80 nginx-angular
+
+
+
+
+
+############################## STAGE 1: Build ##############################
+# We label our stage as 'builder'
+# FROM angular-cli as angular-builder
+# WORKDIR /ng-app
+# COPY package.json package.json
+# RUN npm install
+# COPY . .
+# RUN ng build --prod --build-optimizer
+
+# # ############################## STAGE 2: Setup ##############################
+# FROM microsoft/iis:10.0.14393.206
+# COPY --from=angular-builder /ng-app/dist /ng-app
+# SHELL ["powershell"]
+# RUN Remove-WebSite -Name 'Default Web Site'
+# RUN New-Website -Name 'tour-or-heros' -Port 80 \
+#     -PhysicalPath 'c:\ng-app' -ApplicationPool '.NET v4.5'
+
+# EXPOSE 80
 
 # docker build -t tour-of-heros:1 .
 
